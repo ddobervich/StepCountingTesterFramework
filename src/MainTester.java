@@ -9,11 +9,11 @@ public class MainTester {
     private static final String TEST_FILE_FOLDER = "testFiles/blk3";
 
     public static void main(String[] args) {
-        //StepCounter counter = new Pedometer();  /* instantiate your step counter here */
+        StepCounter counter = new DefaultStepCounter();  /* instantiate your step counter here */
 
-        ArrayList<Path> paths = getPaths();
+        ArrayList<Path> paths = getPaths(TEST_FILE_FOLDER);
 
-        System.out.println("Filename \t\t\t prediction \t\t correct \t\t error");
+        System.out.println("Filename \t\t\t\t prediction \t\t correct \t\t error");
         double totalError = 0;
         int count = 0;
         for (Path path : paths) {
@@ -24,14 +24,23 @@ public class MainTester {
 
             int error = data.correctNumberOfSteps - prediction;
             totalError += (error*error);
-            System.out.println(data.filePath + "\t\t" + prediction + "\t\t" + data.correctNumberOfSteps + "\t\t" + error);
+            String displayPath = padWidthTo(data.filePath, 80);
+            System.out.println(displayPath + "\t" + prediction + "\t\t" + data.correctNumberOfSteps + "\t\t" + error);
         }
         System.out.println();
         System.out.println("Mean squared error: " + (totalError/count));
-
     }
 
-    private static FileData processPath(Path path) {
+    public static String padWidthTo(String filePath, int width) {
+        if (filePath.length() >= width) return filePath;
+        int numSpacesToAdd = width - filePath.length();
+        for (int i = 0; i < numSpacesToAdd; i++) {
+            filePath += " ";
+        }
+        return filePath;
+    }
+
+    public static FileData processPath(Path path) {
         String filename = path.getFileName().toString();
         int numSteps = extractNumSteps(path);
         String text;
@@ -51,7 +60,7 @@ public class MainTester {
         return new FileData(text, path.toString(), numSteps);
     }
 
-    private static int extractNumSteps(Path path) {
+    public static int extractNumSteps(Path path) {
         String filename = path.getFileName().toString();
         filename = filename.replaceAll("[^\\d]","");
         int steps;
@@ -65,9 +74,9 @@ public class MainTester {
         return steps;
     }
 
-    private static ArrayList<Path> getPaths() {
+    public static ArrayList<Path> getPaths(String folderPath) {
         ArrayList<Path> paths = new ArrayList<>();
-        Path workDir = Paths.get(TEST_FILE_FOLDER);
+        Path workDir = Paths.get(folderPath);
         if (!Files.notExists(workDir)) {
             try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(workDir)) {
                 for (Path p : directoryStream) {
