@@ -4,68 +4,60 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainTester {
-    private static final String TEST_FILE_FOLDER = "testFiles/blk3";
-
     public static void main(String[] args) {
-        //StepCounter counter = new Pedometer();  /* instantiate your step counter here */
+        StepCounter counter = new Baseline();  /* instantiate your step counter here */
 
-        ArrayList<Path> paths = getPaths();
+        List<FileData> results = generatePredictionsWith(counter, "testFiles/blk3");
+        display(results);
+
+    }
+
+    private static List<FileData> generatePredictionsWith(StepCounter counter, String testFilesFolder) {
+        ArrayList<FileData> results = new ArrayList<>();
+        for (Path file : getTestFiles(testFilesFolder)) {
+            FileData fileData = FileData.loadFile(file);
+            makePrediction(counter, fileData);
+            results.add(fileData);
+        }
+        return results;
+    }
+
+    private static void makePrediction(StepCounter counter, FileData file) {
+        String[] lines = file.text.split("\n");
+
+        ArrayList<Double> accX = StepCounter.getColumnAsList(lines, 0);
+        ArrayList<Double> accY = StepCounter.getColumnAsList(lines, 1);
+        ArrayList<Double> accZ = StepCounter.getColumnAsList(lines, 2);
+        ArrayList<Double> gyroX = StepCounter.getColumnAsList(lines, 3);
+        ArrayList<Double> gyroY = StepCounter.getColumnAsList(lines, 4);
+        ArrayList<Double> gyroZ = StepCounter.getColumnAsList(lines, 5);
+
+        file.prediction = counter.countSteps(accX, accY, accZ, gyroX, gyroY, gyroZ);
+    }
+
+    private static void display(List<FileData> results) {
+        if (results.size() == 0) {
+            System.err.println("No results to display (results list size 0)");
+            return;
+        }
 
         System.out.println("Filename \t\t\t prediction \t\t correct \t\t error");
         double totalError = 0;
-        int count = 0;
-        for (Path path : paths) {
-            FileData data = processPath( path );
 
-            int prediction = counter.countSteps(data.text);
-            count++;
-
-            int error = data.correctNumberOfSteps - prediction;
+        for (FileData result : results) {
+            int error = result.correctNumberOfSteps - result.prediction;
             totalError += (error*error);
-            System.out.println(data.filePath + "\t\t" + prediction + "\t\t" + data.correctNumberOfSteps + "\t\t" + error);
+            System.out.println(result.filePath + "\t\t" + result.prediction + "\t\t" + result.correctNumberOfSteps + "\t\t" + error);
         }
+
         System.out.println();
-        System.out.println("Mean squared error: " + (totalError/count));
-
+        System.out.println("Mean squared error: " + (totalError/results.size()));
     }
 
-    private static FileData processPath(Path path) {
-        String filename = path.getFileName().toString();
-        int numSteps = extractNumSteps(path);
-        String text;
-
-        if (numSteps == -1) {
-            System.err.println("Couldn't get correct # of steps for file: " + path);
-            return null;
-        }
-
-        try {
-            text = readFile(path.toString());
-        } catch (Exception e) {
-            System.err.println("Error reading the file: " + path);
-            return null;
-        }
-
-        return new FileData(text, path.toString(), numSteps);
-    }
-
-    private static int extractNumSteps(Path path) {
-        String filename = path.getFileName().toString();
-        filename = filename.replaceAll("[^\\d]","");
-        int steps;
-        try {
-            steps = Integer.parseInt(filename.trim());
-        } catch (Exception e) {
-            System.err.println("Error extracting # of steps from filename: " + filename);
-            return -1;
-        }
-
-        return steps;
-    }
-
-    private static ArrayList<Path> getPaths() {
+    private static ArrayList<Path> getTestFiles(String TEST_FILE_FOLDER) {
         ArrayList<Path> paths = new ArrayList<>();
         Path workDir = Paths.get(TEST_FILE_FOLDER);
         if (!Files.notExists(workDir)) {
@@ -79,9 +71,5 @@ public class MainTester {
             }
         }
         return null;
-    }
-
-    public static String readFile(String fileName) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(fileName)));
     }
 }
