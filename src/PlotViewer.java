@@ -7,7 +7,8 @@ public class PlotViewer {
     private static final String TEST_FILE_FOLDER = "testFiles/blk3";
 
     public static void main(String[] args) {
-        Baseline counter = new Baseline();  /* instantiate your step counter here */
+        //Baseline counter = new Baseline();  /* instantiate your step counter here */
+        DumbCounter counter = new DumbCounter();
 
         ArrayList<Path> paths = MainTester.getTestFiles(TEST_FILE_FOLDER);
         Path fileToPlot = paths.get(2);  // <-- file to plot

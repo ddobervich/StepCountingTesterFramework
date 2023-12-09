@@ -12,7 +12,12 @@ public abstract class StepCounter {
      * @return A list of values at the specified indexes.
      */
     public static ArrayList<Double> extractValues(ArrayList<Integer> indexes, ArrayList<Double> vals) {
-        System.err.println("Implement extractValues in StepCounter.java");
-        return new ArrayList<>();
+        ArrayList<Double> output = new ArrayList<>();
+
+        for (Integer index : indexes) {
+            output.add( vals.get(index) );
+        }
+
+        return output;
     }
 }

@@ -16,4 +16,18 @@ public class DumbCounter extends StepCounter {
 
         return stepIndexes;
     }
+
+    public ArrayList<Double> calculate3dMagnitudes(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z) {
+        ArrayList<Double> mags = new ArrayList<>();
+
+        for (int i = 0; i < x.size(); i++) {
+            mags.add( calculate3dVector(x.get(i), y.get(i), z.get(i)));
+        }
+
+        return mags;
+    }
+
+    private Double calculate3dVector(Double x, Double y, Double z) {
+        return Math.sqrt(x*x + y*y + z*z);
+    }
 }

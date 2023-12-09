@@ -32,9 +32,16 @@ public class FileData {
     }
 
     public static ArrayList<Double> getColumnAsList(String[] lines, int colNum) {
-        System.err.println("Implement getColumnAsList(...) in StepCounter.java");
-        // TODO: implement this
-        return new ArrayList<>();
+        ArrayList<Double> vals = new ArrayList<>();
+
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            String[] valuesArray = line.split(",");
+            double val = Double.parseDouble(valuesArray[colNum].trim());
+            vals.add(val);
+        }
+
+        return vals;
     }
 
     public void extractSensorData() {
