@@ -12,7 +12,6 @@ public class MainTester {
 
         List<FileData> results = generatePredictionsWith(counter, "testFiles/blk3");
         display(results);
-
     }
 
     private static List<FileData> generatePredictionsWith(StepCounter counter, String testFilesFolder) {
@@ -25,17 +24,9 @@ public class MainTester {
         return results;
     }
 
-    private static void makePrediction(StepCounter counter, FileData file) {
-        String[] lines = file.text.split("\n");
-
-        ArrayList<Double> accX = StepCounter.getColumnAsList(lines, 0);
-        ArrayList<Double> accY = StepCounter.getColumnAsList(lines, 1);
-        ArrayList<Double> accZ = StepCounter.getColumnAsList(lines, 2);
-        ArrayList<Double> gyroX = StepCounter.getColumnAsList(lines, 3);
-        ArrayList<Double> gyroY = StepCounter.getColumnAsList(lines, 4);
-        ArrayList<Double> gyroZ = StepCounter.getColumnAsList(lines, 5);
-
-        file.prediction = counter.countSteps(accX, accY, accZ, gyroX, gyroY, gyroZ);
+    static void makePrediction(StepCounter counter, FileData file) {
+        file.stepIndexes = counter.getStepIndexes(file);
+        file.stepPrediction = file.stepIndexes.size();
     }
 
     private static void display(List<FileData> results) {
@@ -48,16 +39,16 @@ public class MainTester {
         double totalError = 0;
 
         for (FileData result : results) {
-            int error = result.correctNumberOfSteps - result.prediction;
+            int error = result.correctNumberOfSteps - result.stepPrediction;
             totalError += (error*error);
-            System.out.println(result.filePath + "\t\t" + result.prediction + "\t\t" + result.correctNumberOfSteps + "\t\t" + error);
+            System.out.println(result.filePath + "\t\t" + result.stepPrediction + "\t\t" + result.correctNumberOfSteps + "\t\t" + error);
         }
 
         System.out.println();
         System.out.println("Mean squared error: " + (totalError/results.size()));
     }
 
-    private static ArrayList<Path> getTestFiles(String TEST_FILE_FOLDER) {
+    static ArrayList<Path> getTestFiles(String TEST_FILE_FOLDER) {
         ArrayList<Path> paths = new ArrayList<>();
         Path workDir = Paths.get(TEST_FILE_FOLDER);
         if (!Files.notExists(workDir)) {

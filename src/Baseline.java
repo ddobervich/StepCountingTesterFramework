@@ -1,23 +1,31 @@
 import java.util.ArrayList;
 
-public class Baseline implements StepCounter {
+public class Baseline extends StepCounter {
 
     @Override
-    public int countSteps(ArrayList<Double> xAcc, ArrayList<Double> yAcc, ArrayList<Double> zAcc, ArrayList<Double> xGyro, ArrayList<Double> yGyro, ArrayList<Double> zGyro) {
-        System.err.println("You must implement countSteps in Baseline.java");
+    public ArrayList<Integer> getStepIndexes(FileData file) {
+        if (file.xAcc == null) {        // if we haven't extracted the data, do it.
+            file.extractSensorData();
+        }
 
-        ArrayList<Integer> stepIndexes = getStepIndexes(xAcc, yAcc, zAcc, xGyro, yGyro, zGyro);
-
-        return stepIndexes.size();
+        return getStepIndexes(file.xAcc, file.yAcc, file.zAcc);
     }
 
-    @Override
-    public ArrayList<Integer> getStepIndexes(ArrayList<Double> xAcc, ArrayList<Double> yAcc, ArrayList<Double> zAcc, ArrayList<Double> xGyro, ArrayList<Double> yGyro, ArrayList<Double> zGyro) {
+    private ArrayList<Integer> getStepIndexes(ArrayList<Double> xAcc, ArrayList<Double> yAcc, ArrayList<Double> zAcc) {
         ArrayList<Integer> indexes = new ArrayList<>();
 
         System.err.println("You must implement getStepIndexes in Baseline.java");
 
+        //TODO: use xAcc, yAcc and zAcc to calculate list of 3d magnitudes
+        //TODO: loop over magnitudes and count # of peaks
+
         return indexes;
+    }
+
+    public ArrayList<Double> calculate3dMagnitudes(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z) {
+        System.err.println("You must implement calculate3dMagnitudes in Baseline.java");
+
+        return null;
     }
 
 }

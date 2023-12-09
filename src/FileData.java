@@ -2,18 +2,52 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class FileData {
     public String text;
     public String filePath;
     public int correctNumberOfSteps;
-    public int prediction;
+    public int stepPrediction;
 
-    public FileData(String text, String filePath, int correctNumberOfSteps) {
+    public ArrayList<Double> xAcc, yAcc, zAcc, xGyro, yGyro, zGyro;
+    public ArrayList<Integer> stepIndexes;
+
+    /***
+     * Construct a FileData object to store the text and extracted data associated
+     * with a data file.
+     *
+     * Run the static method FileData.loadFile(...)  to create new instances.
+     * This ensures that an object is only created if both the text and the correct #
+     * of steps can be read
+     * @param text the text from the file (should be in csv format with 1st line column names)
+     * @param filePath the path of the file this object represents
+     * @param correctNumberOfSteps the correct # of steps as recorded in the file name
+     */
+    private FileData(String text, String filePath, int correctNumberOfSteps) {
         this.text = text;
         this.filePath = filePath;
         this.correctNumberOfSteps = correctNumberOfSteps;
-        this.prediction = -1;
+        this.stepPrediction = -1;
+    }
+
+    public static ArrayList<Double> getColumnAsList(String[] lines, int colNum) {
+        System.err.println("Implement getColumnAsList(...) in StepCounter.java");
+        // TODO: implement this
+        return new ArrayList<>();
+    }
+
+    public void extractSensorData() {
+        System.out.println("Separating data into separate lists by sensor...");
+        String[] lines = text.split("\n");
+
+        System.out.println(lines.length + " data values");
+        xAcc = FileData.getColumnAsList(lines, 0);
+        yAcc = FileData.getColumnAsList(lines, 1);
+        zAcc = FileData.getColumnAsList(lines, 2);
+        xGyro = FileData.getColumnAsList(lines, 3);
+        yGyro = FileData.getColumnAsList(lines, 4);
+        zGyro = FileData.getColumnAsList(lines, 5);
     }
 
     public static int extractNumSteps(Path path) {
